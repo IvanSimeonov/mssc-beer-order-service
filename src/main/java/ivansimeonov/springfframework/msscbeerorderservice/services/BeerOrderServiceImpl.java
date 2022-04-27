@@ -59,18 +59,18 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public BeerOrderDto placeOrder(UUID customerId, BeerOrderDto beerOrderDto) {
-        Optional<Customer> customer = this.customerRepository.findById(customerId);
+        Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isPresent()) {
-            BeerOrder beerOrder = this.beerOrderMapper.beerOrderDtoToBeerOrder(beerOrderDto);
+            BeerOrder beerOrder = beerOrderMapper.beerOrderDtoToBeerOrder(beerOrderDto);
             beerOrder.setId(null);
             beerOrder.setCustomer(customer.get());
             beerOrder.setOrderStatus(OrderStatusEnum.NEW);
 
             beerOrder.getBeerOrderLines().forEach(beerOrderLine -> beerOrderLine.setBeerOrder(beerOrder));
 
-            BeerOrder savedBeerOrder = this.beerOrderRepository.saveAndFlush(beerOrder);
+            BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
 
-            return this.beerOrderMapper.beerOrderToBeerOrderDto(savedBeerOrder);
+            return beerOrderMapper.beerOrderToBeerOrderDto(savedBeerOrder);
         }
         throw new RuntimeException(CUSTOMER_NOT_FOUND_EXCEPTION);
     }
@@ -88,9 +88,9 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     }
 
     private BeerOrder getOrder(UUID customerId, UUID orderId) {
-        Optional<Customer> customer = this.customerRepository.findById(customerId);
+        Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isPresent()) {
-            Optional<BeerOrder> beerOrder = this.beerOrderRepository.findById(orderId);
+            Optional<BeerOrder> beerOrder = beerOrderRepository.findById(orderId);
             if (beerOrder.isPresent()) {
                 BeerOrder currentBeerOrder = beerOrder.get();
                 if (currentBeerOrder.getCustomer().getId().equals(customerId)) {
