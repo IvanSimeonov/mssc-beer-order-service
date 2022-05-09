@@ -8,6 +8,7 @@ import ivansimeonov.springframework.msscbeerorderservice.repositories.CustomerRe
 import ivansimeonov.springframework.msscbeerorderservice.web.mappers.BeerOrderMapper;
 import ivansimeonov.springframework.msscbeerorderservice.web.model.BeerOrderDto;
 import ivansimeonov.springframework.msscbeerorderservice.web.model.BeerOrderPagedList;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * @Date 27.04.22
  */
 
+@Slf4j
 @Service
 public class BeerOrderServiceImpl implements BeerOrderService {
 
@@ -66,6 +68,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     @Override
     public BeerOrderDto placeOrder(UUID customerId, BeerOrderDto beerOrderDto) {
         Optional<Customer> customer = customerRepository.findById(customerId);
+        log.warn("Customer: " + (customer.isPresent() ? customer.get().getCustomerName() : "none"));
         if (customer.isPresent()) {
             BeerOrder beerOrder = beerOrderMapper.beerOrderDtoToBeerOrder(beerOrderDto);
             beerOrder.setId(null);
@@ -75,6 +78,8 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             beerOrder.getBeerOrderLines().forEach(beerOrderLine -> beerOrderLine.setBeerOrder(beerOrder));
 
             BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
+
+            log.warn("Saved Beer Order: " + beerOrder.getId());
 
             return beerOrderMapper.beerOrderToBeerOrderDto(savedBeerOrder);
         }

@@ -17,9 +17,9 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- *   @Author ivansimeonov
- *   @Date 6.05.22
-*/
+ * @Author ivansimeonov
+ * @Date 6.05.22
+ */
 @Service
 @Slf4j
 public class TastingRoomService {
@@ -42,11 +42,12 @@ public class TastingRoomService {
 
     @Transactional
     @Scheduled(fixedRate = 2000) //run every 2 seconds
-    public void placeTastingRoomOrder(){
+    public void placeTastingRoomOrder() {
 
         List<Customer> customerList = customerRepository.findAllByCustomerNameLike(BeerOrderBootstrap.TASTING_ROOM);
+        log.warn("Customer List: " + customerList.size());
 
-        if (customerList.size() == 1){ //should be just one
+        if (customerList.size() == 1) { //should be just one
             doPlaceOrder(customerList.get(0));
         } else {
             log.error("Too many or too few tasting room customers found");
